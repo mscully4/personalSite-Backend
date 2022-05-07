@@ -1,7 +1,7 @@
-import { Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { RestApi, Resource } from 'aws-cdk-lib/aws-apigateway'
-import { Code, Runtime, LayerVersion } from 'aws-cdk-lib/aws-lambda';
+import { RestApi, Resource, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
+import { Code, Runtime, LayerVersion, Function } from 'aws-cdk-lib/aws-lambda';
 import { Role } from 'aws-cdk-lib/aws-iam';
 
 const date = new Date()
@@ -33,5 +33,32 @@ export class ApiStack extends Stack {
       pathPart: 'travel',
       parent: this.restApi.root
     })
+
+     // Destinations
+    const destinationsApiResource = new Resource(this, 'destinationsApiResource', {
+      pathPart: 'destinations',
+      parent: travelApiResource
+    })
+
+    const destinationsGetFunction = new Function(this, 'destinationsGetFunction', {
+      runtime: Runtime.PYTHON_3_8,
+      memorySize: 1024,
+      timeout: Duration.seconds(30),
+      handler: "api.travel.destinations.lambda_function.lambda_handler",
+      code: Code.fromAsset('src/'),
+      environment: {
+        PYTHONPATH: "/var/runtime:/opt",
+        DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
+        DYNAMO_TABLE_NAME: props.dynamoTableName,
+        DATETIME: date.toISOString()
+      },
+      layers: [apiLayer]
+    })
+
+    if (destinationsGetFunction.role) {
+      props.dynamoTableReadRole.grant(destinationsGetFunction.role, 'sts:AssumeRole')
+    }
+
+    destinationsApiResource.addMethod('GET', new LambdaIntegration(destinationsGetFunction), {})
   }
 }
