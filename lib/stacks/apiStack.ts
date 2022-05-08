@@ -60,5 +60,32 @@ export class ApiStack extends Stack {
     }
 
     destinationsApiResource.addMethod('GET', new LambdaIntegration(destinationsGetFunction), {})
+
+    // Places
+    const placesApiResource = new Resource(this, 'placesApiResource', {
+      pathPart: 'places',
+      parent: travelApiResource
+    })
+
+    const placesGetFunction = new Function(this, 'placesGetFunction', {
+      runtime: Runtime.PYTHON_3_8,
+      memorySize: 1024,
+      timeout: Duration.seconds(30),
+      handler: "api.travel.places.lambda_function.lambda_handler",
+      code: Code.fromAsset("src/"),
+      environment: {
+        PYTHONPATH: "/var/runtime:/opt",
+        DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
+        DYNAMO_TABLE_NAME: props.dynamoTableName,
+        DATETIME: date.toISOString()
+      },
+      layers: [apiLayer]
+    })
+
+    if (placesGetFunction.role) {
+      props.dynamoTableReadRole.grant(placesGetFunction.role, 'sts:AssumeRole')
+    }
+
+    placesApiResource.addMethod("GET", new LambdaIntegration(placesGetFunction), {})
   }
 }
