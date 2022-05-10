@@ -114,5 +114,30 @@ export class ApiStack extends Stack {
     }
 
     photosApiResource.addMethod("GET", new LambdaIntegration(photosGetFunction), {})
+
+    // Albums
+    const albumsApiResource = new Resource(this, 'albumsApiResource', {
+      pathPart: 'albums',
+      parent: travelApiResource
+    })
+
+    const albumsGetFunction = new Function(this, 'albumsGetFunction', {
+      runtime: Runtime.PYTHON_3_8,
+      memorySize: 1024,
+      timeout: Duration.seconds(30),
+      handler: "api.travel.albums.lambda_function.lambda_handler",
+      code: Code.fromAsset("src/"),
+      environment: {
+        PYTHONPATH: "/var/runtime:/opt",
+        DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
+        DYNAMO_TABLE_NAME: props.dynamoTableName,
+        DATETIME: date.toISOString()
+      },
+      layers: [apiLayer]
+    })
+
+    props.dynamoTableReadRole.grant(albumsGetFunction.role!, 'sts:AssumeRole')
+
+    albumsApiResource.addMethod("GET", new LambdaIntegration(albumsGetFunction), {})
   }
 }
