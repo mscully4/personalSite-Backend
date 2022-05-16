@@ -19,6 +19,9 @@ class TravelEntities:
     PHOTO = "PHOTO"
     ALBUM = "ALBUM"
 
+class HomeEntities:
+    PHOTO = "PHOTO"
+
 def create_record(pk: str, sk: str, entity: Dict) -> Dict:
     return {
         TableSchema.PK: pk,

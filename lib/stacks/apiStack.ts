@@ -34,6 +34,31 @@ export class ApiStack extends Stack {
       parent: this.restApi.root
     })
 
+    // Photos
+    const homePhotosApiResource = new Resource(this, 'homePhotosApiResource', {
+      pathPart: 'photos',
+      parent: homeApiResource
+    })
+
+    const homePhotosGetFunction = new Function(this, 'homePhotosGetFunction', {
+      runtime: Runtime.PYTHON_3_8,
+      memorySize: 1024,
+      timeout: Duration.seconds(30),
+      handler: "api.home.photos.lambda_function.lambda_handler",
+      code: Code.fromAsset('src/'),
+      environment: {
+        PYTHONPATH: "/var/runtime:/opt",
+        DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
+        DYNAMO_TABLE_NAME: props.dynamoTableName,
+        DATETIME: date.toISOString()
+      },
+      layers: [apiLayer]
+    })
+
+    props.dynamoTableReadRole.grant(homePhotosGetFunction.role!, 'sts:AssumeRole')
+
+    homePhotosApiResource.addMethod('GET', new LambdaIntegration(homePhotosGetFunction), {})
+    
     // Travel Resource
     const travelApiResource = new Resource(this, 'travelApiResource', {
       pathPart: 'travel',
