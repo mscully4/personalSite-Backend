@@ -33,5 +33,8 @@ export class StorageStack extends Stack {
 
     const travelPhotosBucket = new Bucket(this, 'travelMapPhotosBucket', {})
     travelPhotosBucket.grantPublicAccess()
+
+    const homePhotosBucket = new Bucket(this, 'homePhotosBucket', {})
+    homePhotosBucket.grantPublicAccess()
   }
 }
