@@ -12,3 +12,8 @@ The `cdk.json` file tells the CDK Toolkit how to execute your app.
  * `cdk deploy`      deploy this stack to your default AWS account/region
  * `cdk diff`        compare deployed stack with current state
  * `cdk synth`       emits the synthesized CloudFormation template
+
+
+ ## Layer
+python3 -m pip freeze > requirements.txt
+python3 -m pip install -r requirements.txt  -t ./layers/api/
