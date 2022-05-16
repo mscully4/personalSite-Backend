@@ -28,6 +28,12 @@ export class ApiStack extends Stack {
       code: Code.fromAsset('layers/api'),
     });
 
+    // Home Resource
+    const homeApiResource = new Resource(this, 'homeApiResource', {
+      pathPart: 'home',
+      parent: this.restApi.root
+    })
+
     // Travel Resource
     const travelApiResource = new Resource(this, 'travelApiResource', {
       pathPart: 'travel',
