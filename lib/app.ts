@@ -29,6 +29,7 @@ deploymentEnvironments.forEach((env: DeploymentEnvironment) => {
 
   const personalSiteStack = new PersonalSiteStack(app, `${appName}-personalSiteStack-${env.stage}`, {
     env: env,
+    hostedZone: networkingStack.hostedZone,
     sslCertificate: networkingStack.sslCertificate
   })
 });

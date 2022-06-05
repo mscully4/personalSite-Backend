@@ -2,11 +2,14 @@ import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
 import { Distribution, OriginAccessIdentity, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
+import { AaaaRecord, ARecord, PublicHostedZone, RecordTarget } from "aws-cdk-lib/aws-route53";
+import { CloudFrontTarget } from "aws-cdk-lib/aws-route53-targets";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
 
 interface apiStackProps extends StackProps {
+  readonly hostedZone: PublicHostedZone,
   readonly sslCertificate: Certificate
 }
 
@@ -35,7 +38,7 @@ export class PersonalSiteStack extends Stack {
     );
     bucket.grantRead(originAccessIdentity);
 
-    new Distribution(this, "personalSiteDistribution", {
+    const distribution = new Distribution(this, "personalSiteDistribution", {
       defaultRootObject: "index.html",
       defaultBehavior: {
         origin: new S3Origin(bucket, { originAccessIdentity }),
@@ -52,6 +55,16 @@ export class PersonalSiteStack extends Stack {
       domainNames: [
         "michaeljscully.com"
       ]
+    });
+
+    new ARecord(this, 'ARecord', {
+      zone: props.hostedZone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
+    });
+
+    new AaaaRecord(this, 'AAAARecord', {
+      zone: props.hostedZone,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(distribution)),
     });
   }
 }
