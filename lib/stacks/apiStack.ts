@@ -1,8 +1,11 @@
 import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { RestApi, Resource, LambdaIntegration } from 'aws-cdk-lib/aws-apigateway'
+import { RestApi, Resource, LambdaIntegration, DomainName, EndpointType } from 'aws-cdk-lib/aws-apigateway'
 import { Code, Runtime, LayerVersion, Function } from 'aws-cdk-lib/aws-lambda';
 import { Role } from 'aws-cdk-lib/aws-iam';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { ARecord, PublicHostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { ApiGatewayDomain } from 'aws-cdk-lib/aws-route53-targets';
 
 const date = new Date()
 
@@ -10,6 +13,8 @@ interface apiStackProps extends StackProps {
   dynamoTableReadRole: Role,
   dynamoTableWriteRole: Role,
   dynamoTableName: string,
+  sslCertificate: Certificate,
+  hostedZone: PublicHostedZone
 }
 
 export class ApiStack extends Stack {
@@ -19,6 +24,19 @@ export class ApiStack extends Stack {
     super(scope, id, props);
 
     this.restApi = new RestApi(this, 'personalSiteRestApi', {})
+
+    const apiGatewayDomainName = new DomainName(this, 'DomainName', {
+      domainName: 'api.michaeljscully.com',
+      certificate: props.sslCertificate,
+      endpointType: EndpointType.EDGE,
+      mapping: this.restApi
+    });
+
+    new ARecord(this, 'ApiARecord', {
+      zone: props.hostedZone,
+      recordName: "api.michaeljscully.com",
+      target: RecordTarget.fromAlias(new ApiGatewayDomain(apiGatewayDomainName)),
+    });
 
     const apiLayer = new LayerVersion(this, 'apiLambdaLayer', {
       compatibleRuntimes: [

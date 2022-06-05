@@ -20,6 +20,8 @@ deploymentEnvironments.forEach((env: DeploymentEnvironment) => {
 
   const apiStack = new ApiStack(app, `${appName}-apiStack-${env.stage}`, {
     env: env,
+    sslCertificate: networkingStack.sslCertificate,
+    hostedZone: networkingStack.hostedZone,
     dynamoTableName: storageStack.dynamoTableName,
     dynamoTableReadRole: storageStack.dynamoTableReadRole,
     dynamoTableWriteRole: storageStack.dynamoTableWriteRole
