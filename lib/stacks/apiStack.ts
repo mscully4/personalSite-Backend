@@ -68,6 +68,7 @@ export class ApiStack extends Stack {
         PYTHONPATH: "/var/runtime:/opt",
         DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
         DYNAMO_TABLE_NAME: props.dynamoTableName,
+        ACCESS_CONTROL_ALLOW_ORIGIN: `https://${props.hostedZone.zoneName}`,
         DATETIME: date.toISOString()
       },
       layers: [apiLayer]
@@ -99,6 +100,7 @@ export class ApiStack extends Stack {
         PYTHONPATH: "/var/runtime:/opt",
         DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
         DYNAMO_TABLE_NAME: props.dynamoTableName,
+        ACCESS_CONTROL_ALLOW_ORIGIN: `https://${props.hostedZone.zoneName}`,
         DATETIME: date.toISOString()
       },
       layers: [apiLayer]
@@ -126,6 +128,7 @@ export class ApiStack extends Stack {
         PYTHONPATH: "/var/runtime:/opt",
         DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
         DYNAMO_TABLE_NAME: props.dynamoTableName,
+        ACCESS_CONTROL_ALLOW_ORIGIN: `https://${props.hostedZone.zoneName}`,
         DATETIME: date.toISOString()
       },
       layers: [apiLayer]
@@ -153,6 +156,7 @@ export class ApiStack extends Stack {
         PYTHONPATH: "/var/runtime:/opt",
         DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
         DYNAMO_TABLE_NAME: props.dynamoTableName,
+        ACCESS_CONTROL_ALLOW_ORIGIN: `https://${props.hostedZone.zoneName}`,
         DATETIME: date.toISOString()
       },
       layers: [apiLayer]
@@ -180,6 +184,7 @@ export class ApiStack extends Stack {
         PYTHONPATH: "/var/runtime:/opt",
         DYNAMO_READ_ROLE_ARN: props.dynamoTableReadRole.roleArn,
         DYNAMO_TABLE_NAME: props.dynamoTableName,
+        ACCESS_CONTROL_ALLOW_ORIGIN: `https://${props.hostedZone.zoneName}`,
         DATETIME: date.toISOString()
       },
       layers: [apiLayer]

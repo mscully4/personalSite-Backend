@@ -22,6 +22,7 @@ logger.setLevel("INFO")
 required_env_vars = [
     EnvironmentVariables.DYNAMO_READ_ROLE_ARN,
     EnvironmentVariables.DYNAMO_TABLE_NAME,
+    EnvironmentVariables.ACCESS_CONTROL_ALLOW_ORIGIN
 ]
 
 partition_key = f"{Namespaces.HOME}#{HomeEntities.PHOTO}"
@@ -50,5 +51,8 @@ def lambda_handler(event: APIGatewayProxyEvent, context):
     
     return {
         'statusCode': 200,
-        'body': serialized_results
+        'body': serialized_results,
+        'headers': {
+            'Access-Control-Allow-Origin': env[EnvironmentVariables.ACCESS_CONTROL_ALLOW_ORIGIN],
+        }
     }
