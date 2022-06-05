@@ -1,13 +1,14 @@
 import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
-import { Distribution, OriginAccessIdentity } from "aws-cdk-lib/aws-cloudfront";
+import { Certificate } from "aws-cdk-lib/aws-certificatemanager";
+import { Distribution, OriginAccessIdentity, ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { S3Origin } from "aws-cdk-lib/aws-cloudfront-origins";
 import { Bucket } from "aws-cdk-lib/aws-s3";
 import { BucketDeployment, Source } from "aws-cdk-lib/aws-s3-deployment";
 import { Construct } from "constructs";
 
-const date = new Date();
-
-interface apiStackProps extends StackProps {}
+interface apiStackProps extends StackProps {
+  readonly sslCertificate: Certificate
+}
 
 export class PersonalSiteStack extends Stack {
   constructor(scope: Construct, id: string, props: apiStackProps) {
@@ -38,7 +39,19 @@ export class PersonalSiteStack extends Stack {
       defaultRootObject: "index.html",
       defaultBehavior: {
         origin: new S3Origin(bucket, { originAccessIdentity }),
+        viewerProtocolPolicy: ViewerProtocolPolicy.REDIRECT_TO_HTTPS
       },
+      errorResponses: [
+        {
+          httpStatus: 404,
+          responseHttpStatus: 200,
+          responsePagePath: "/index.html"
+        }
+      ],
+      certificate: props.sslCertificate,
+      domainNames: [
+        "michaeljscully.com"
+      ]
     });
   }
 }
