@@ -1,4 +1,4 @@
-from utils.dynamo import Namespaces, HomeEntities
+from utils.dynamo import Namespaces, ResumeEntities
 from utils.environment import EnvironmentVariables
 from utils.aws_lambda import default_get_handler
 
@@ -14,7 +14,7 @@ required_env_vars = [
     EnvironmentVariables.ACCESS_CONTROL_ALLOW_ORIGIN,
 ]
 
-partition_key = f"{Namespaces.HOME}#{HomeEntities.PHOTO}"
+partition_key = f"{Namespaces.RESUME}#{ResumeEntities.SKILL}"
 
 
 @event_source(data_class=APIGatewayProxyEvent)
